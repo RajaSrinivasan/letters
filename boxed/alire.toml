@@ -1,0 +1,9 @@
+name = "boxed"
+description = "Shiny new project"
+version = "0.1.0-dev"
+
+authors = ["R Srinivasan"]
+maintainers = ["R Srinivasan <rajasrinivasan@hotmail.com>"]
+maintainers-logins = ["rajasrinivasan"]
+
+executables = ["boxed"]
