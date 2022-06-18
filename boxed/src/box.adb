@@ -40,5 +40,58 @@ package body box is
             New_Line ;
         end loop ;
     end Show ;
+    function Same( l : Step ; r : Step ) return boolean is
+    begin
+       if L.from = R.from and L.to = R.to
+       then
+          return true ;
+       end if ;
+       return false ;
+    end Same ;
 
+    function Image(l : GameLetter) return String is
+    begin
+        return Side'Image(l.S) & " " & l.L ;
+    end Image ;
+
+    function EnumerateSteps( g : game ) return Steps_Pkg.Vector is
+       result : Steps_Pkg.Vector ;
+       procedure EnumerateSteps( s : Side ; c : character ) is
+          res : Step ;
+       begin
+          res.From := ( s , c );
+          for ns in Side'Range
+          loop
+             if s /= ns
+             then
+                for nc in 1..LETTERS_PER_SIDE
+                loop
+                   res.To := ( ns , g(ns)(nc) );
+                   result.Append(res);
+                end loop ;
+             end if ;
+          end loop ;
+       end EnumerateSteps;
+    begin
+       for s in Side'Range
+       loop
+            for l in 1..LETTERS_PER_SIDE
+            loop
+                EnumerateSteps( s , g(s)(l) );
+            end loop ;
+        end loop ;
+       return result ;
+    end EnumerateSteps;
+
+    procedure Show_Step( st : Steps_Pkg.Cursor ) is
+       val : Step := Steps_Pkg.Element(st) ;
+    begin
+       Put(Image(val.from)); Put( " - "); Put(Image(val.to)) ; New_Line ;
+    end Show_Step ;
+
+    procedure Show( steps : Steps_Pkg.Vector ) is
+    begin
+       steps.Iterate( Show_Step'access);
+    end Show ;
+    
 end box ;
