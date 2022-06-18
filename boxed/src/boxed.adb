@@ -9,6 +9,7 @@ procedure Boxed is
    g : box.game ;
 begin
    g := box.Create(arg);
+   box.Show(g);
    exception
       when boxe : box.INVALID_ARG => 
          Put("Invalid box argument "); Put(Exception_Message(boxe));
