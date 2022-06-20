@@ -1,7 +1,17 @@
 with Ada.Characters.Handling; use Ada.Characters.Handling ;
 with Ada.Text_Io; use Ada.Text_Io;
 with Ada.Integer_Text_Io; Use Ada.Integer_Text_Io;
+
+with dictionary ;
 package body box is
+
+   fulldict : dictionary.Words_Pkg.Set ;
+
+   procedure Initialize is
+   begin
+      fulldict := dictionary.Load ("etc/spellcheck-dict.txt") ;
+   end Initialize ;
+
    function Create( arg : String ) return game is
       result : game ;
    begin
@@ -28,6 +38,11 @@ package body box is
       return result ;
    end Create ;
 
+   function Image( g : game ; l : GameLetter) return String is
+   begin
+       return Side'Image(l.S) & "." & g(l.S)(l.LP) ; 
+   end Image ;
+
     procedure Show( g : Game ) is
     begin
         for s in g'Range
@@ -49,24 +64,20 @@ package body box is
        return false ;
     end Same ;
 
-    function Image(l : GameLetter) return String is
-    begin
-        return Side'Image(l.S) & " " & l.L ;
-    end Image ;
 
     function EnumerateSteps( g : game ) return Steps_Pkg.Vector is
        result : Steps_Pkg.Vector ;
-       procedure EnumerateSteps( s : Side ; c : character ) is
+       procedure EnumerateSteps( s : Side ; cp : Integer ) is
           res : Step ;
        begin
-          res.From := ( s , c );
+          res.From := ( s , cp );
           for ns in Side'Range
           loop
              if s /= ns
              then
                 for nc in 1..LETTERS_PER_SIDE
                 loop
-                   res.To := ( ns , g(ns)(nc) );
+                   res.To := ( ns , nc );
                    result.Append(res);
                 end loop ;
              end if ;
@@ -77,21 +88,67 @@ package body box is
        loop
             for l in 1..LETTERS_PER_SIDE
             loop
-                EnumerateSteps( s , g(s)(l) );
+                EnumerateSteps( s , l );
             end loop ;
         end loop ;
        return result ;
     end EnumerateSteps;
 
-    procedure Show_Step( st : Steps_Pkg.Cursor ) is
-       val : Step := Steps_Pkg.Element(st) ;
-    begin
-       Put(Image(val.from)); Put( " - "); Put(Image(val.to)) ; New_Line ;
-    end Show_Step ;
-
-    procedure Show( steps : Steps_Pkg.Vector ) is
+    procedure Show( g : Game ; steps : Steps_Pkg.Vector ) is
+       procedure Show_Step( st : Steps_Pkg.Cursor ) is
+        val : Step := Steps_Pkg.Element(st) ;
+       begin
+          Put(Image(g,val.from)); Put( " - "); Put(Image(g,val.to)) ; New_Line ;
+       end Show_Step ;
     begin
        steps.Iterate( Show_Step'access);
     end Show ;
     
+    function Equal( l : Steps_Pkg.Vector ; r : Steps_Pkg.Vector ) return boolean is
+    begin
+       return false;
+    end Equal;
+
+    function Solve( p : Puzzle ) return WordList_Pkg.List is
+       result : WordList_Pkg.List ;
+    begin
+       return result ;
+    end Solve ;
+
+    function IsSolution( wl : WordList_Pkg.List ) return boolean is
+        vl : array (Side , 1..LETTERS_PER_SIDE) of boolean := (others => (others => false));
+
+        procedure InspectStep( sp : Steps_Pkg.cursor ) is
+            spe : Step := Steps_Pkg.Element(sp);
+        begin
+            vl(spe.from.S,spe.from.LP) := true ;
+            vl(spe.to.S, spe.to.LP) := true ;
+        end InspectStep ;
+        procedure InspectWord( wp : WordList_Pkg.Cursor ) is
+        begin
+            Steps_Pkg.Iterate( WordList_Pkg.Element(wp).Steps , InspectStep'access );
+        end InspectWord ;
+    begin
+        wl.Iterate(InspectWord'access) ;
+        for s in Side'Range
+        loop
+           for lp in 1..LETTERS_PER_SIDE
+           loop
+              if not vl(s,lp)
+              then 
+                return false ;
+              end if ;
+           end loop ;
+        end loop ;
+        return true ;
+    end IsSolution ;
+
+      procedure EnumerateWords( p : puzzle ; 
+                              gl : GameLetter ; 
+                              wl : in out WordList_Pkg.List ; 
+                              max_depth : integer := 12 ) is
+        begin
+        null ;
+        end EnumerateWords;
+  
 end box ;

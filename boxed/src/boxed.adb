@@ -9,10 +9,12 @@ procedure Boxed is
    g : box.game ;
    s : box.Steps_Pkg.Vector ;
 begin
+   box.Initialize ;
    g := box.Create(arg);
    box.Show(g);
    s := box.EnumerateSteps (g);
-   box.Show (s);
+   box.Show (g,s);
+
    exception
       when boxe : box.INVALID_ARG => 
          Put("Invalid box argument "); Put(Exception_Message(boxe));
