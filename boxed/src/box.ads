@@ -4,7 +4,7 @@ with Ada.Strings.Unbounded; Use Ada.Strings.Unbounded ;
 package box is
       
       INVALID_ARG : exception ;
-
+      MAXWORDLENGTH : constant := 5 ;
       procedure Initialize ;
       type Side is
       ( left, top, right, bottom ) ;
@@ -15,9 +15,9 @@ package box is
       record
          S : Side ;
          LP : Integer ;
-         -- L : character ;
+         L : character ;
       end record ;
-      function Image( g : game ; l : GameLetter) return String ;
+      function Image( l : GameLetter) return String ;
 
     type GameLetters is array (1.. Side'Pos(Side'Last)  * Letters'Length) of GameLetter ;
     type Step is
@@ -33,7 +33,7 @@ package box is
     procedure Show( g : Game );
 
     function EnumerateSteps( g : game ) return Steps_Pkg.Vector ;
-    procedure Show( g : game ; steps : Steps_Pkg.Vector );
+    procedure Show( steps : Steps_Pkg.Vector );
     type Word is
     record
        start : GameLetter ;
@@ -47,12 +47,10 @@ package box is
        steps : Steps_Pkg.Vector ;
     end record ;
     package WordList_Pkg is new Ada.Containers.Doubly_Linked_Lists( Word );
-    procedure EnumerateWords( p : puzzle ; 
+    procedure Solve( p : puzzle ; 
                               gl : GameLetter ; 
                               wl : in out WordList_Pkg.List ; 
-                              max_depth : integer := 12 );
+                              max_depth : integer := 5 );
     function IsSolution( wl : WordList_Pkg.List ) return boolean ;
     function Solve( p : Puzzle ) return WordList_Pkg.List ;
-
-    
 end box ;

@@ -38,9 +38,9 @@ package body box is
       return result ;
    end Create ;
 
-   function Image( g : game ; l : GameLetter) return String is
+   function Image( l : GameLetter ) return String is
    begin
-       return Side'Image(l.S) & "." & g(l.S)(l.LP) ; 
+      return Side'Image(l.S) & "." & l.L ;
    end Image ;
 
     procedure Show( g : Game ) is
@@ -64,20 +64,19 @@ package body box is
        return false ;
     end Same ;
 
-
     function EnumerateSteps( g : game ) return Steps_Pkg.Vector is
        result : Steps_Pkg.Vector ;
        procedure EnumerateSteps( s : Side ; cp : Integer ) is
           res : Step ;
        begin
-          res.From := ( s , cp );
+          res.From := ( s , cp , g(s)(cp));
           for ns in Side'Range
           loop
              if s /= ns
              then
                 for nc in 1..LETTERS_PER_SIDE
                 loop
-                   res.To := ( ns , nc );
+                   res.To := ( ns , nc , g(s)(nc));
                    result.Append(res);
                 end loop ;
              end if ;
@@ -94,11 +93,11 @@ package body box is
        return result ;
     end EnumerateSteps;
 
-    procedure Show( g : Game ; steps : Steps_Pkg.Vector ) is
+    procedure Show( steps : Steps_Pkg.Vector ) is
        procedure Show_Step( st : Steps_Pkg.Cursor ) is
         val : Step := Steps_Pkg.Element(st) ;
        begin
-          Put(Image(g,val.from)); Put( " - "); Put(Image(g,val.to)) ; New_Line ;
+          Put(Image(val.from)); Put( " - "); Put(Image(val.to)) ; New_Line ;
        end Show_Step ;
     begin
        steps.Iterate( Show_Step'access);
@@ -109,9 +108,49 @@ package body box is
        return false;
     end Equal;
 
+    procedure EnumerateWords( p : puzzle ;
+                              prevword : String ;
+                              newletter : GameLetter; 
+                              maxlength : Integer := MAXWORDLENGTH ) is
+        newword : String( 1..prevword'length + 1 ) := prevword & "." ;
+        nextletter : GameLetter ;
+    begin
+        newword(newword'Last) := (p.g(newletter.S)(newletter.LP)) ;
+        Put(newword'Length); Put(" : word > ") ; Put_Line(newword) ;
+        if maxlength = 0
+        then
+           --Put_Line("Reached max length") ;
+           return ;
+        end if ;
+
+        for s in Side
+        loop
+            if newletter.S /= s
+            then
+               for cp in 1..LETTERS_PER_SIDE
+               loop
+                  nextletter := ( s , cp , p.g(s)(cp) ) ;
+                  EnumerateWords( p , newword , nextletter , maxlength - 1 );
+               end loop ;
+            end if ;
+        end loop ;
+    end EnumerateWords ;
+
     function Solve( p : Puzzle ) return WordList_Pkg.List is
        result : WordList_Pkg.List ;
+       sv : Steps_Pkg.Vector ;
+       gl : GameLetter ;
     begin
+       for s in Side
+       loop
+          for c in 1..LETTERS_PER_SIDE
+          loop
+            gl.LP := c ;
+            gl.S := s ;
+            gl.L := p.g(s)(c);
+            EnumerateWords(p  , "" , gl) ;
+          end loop ;
+       end loop ;
        return result ;
     end Solve ;
 
@@ -143,12 +182,26 @@ package body box is
         return true ;
     end IsSolution ;
 
-      procedure EnumerateWords( p : puzzle ; 
-                              gl : GameLetter ; 
-                              wl : in out WordList_Pkg.List ; 
-                              max_depth : integer := 12 ) is
-        begin
+    function MakeWord( st : Steps_Pkg.Vector ) return String is
+        use Steps_Pkg;
+        use type Ada.Containers.Count_Type ;
+       result : String(1..Integer(st.Length+1)) ;
+       curs : Steps_Pkg.Cursor := st.First;
+       cp : Integer := 1 ;
+    begin
+       while curs /= st.Last
+       loop
+          result(cp) := Steps_Pkg.Element(curs).from.L ;
+       end loop ;
+       return result ;
+    end MakeWord ;
+
+    procedure Solve( p : puzzle ; 
+                     gl : GameLetter ; 
+                     wl : in out WordList_Pkg.List ; 
+                     max_depth : integer := 5 ) is
+    begin
         null ;
-        end EnumerateWords;
-  
+    end Solve;
+
 end box ;
