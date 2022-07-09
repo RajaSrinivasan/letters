@@ -4,13 +4,14 @@ with Ada.Strings.Unbounded; Use Ada.Strings.Unbounded ;
 package box is
       
       INVALID_ARG : exception ;
-      MAXWORDLENGTH : constant := 5 ;
+      MAXWORDLENGTH : constant := 6 ;
       procedure Initialize ;
       type Side is
       ( left, top, right, bottom ) ;
       LETTERS_PER_SIDE : constant := 3 ;
       subtype letters is string(1..LETTERS_PER_SIDE) ;
       type game is array (Side) of letters ;
+   
       type GameLetter is
       record
          S : Side ;
@@ -47,6 +48,7 @@ package box is
        steps : Steps_Pkg.Vector ;
     end record ;
     package WordList_Pkg is new Ada.Containers.Doubly_Linked_Lists( Word );
+    package PlainWordList_Pkg is new Ada.Containers.Doubly_Linked_Lists( Ada.Strings.Unbounded.Unbounded_String );
     procedure Solve( p : puzzle ; 
                               gl : GameLetter ; 
                               wl : in out WordList_Pkg.List ; 

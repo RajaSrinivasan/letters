@@ -111,12 +111,27 @@ package body box is
     procedure EnumerateWords( p : puzzle ;
                               prevword : String ;
                               newletter : GameLetter; 
-                              maxlength : Integer := MAXWORDLENGTH ) is
+                              maxlength : Integer := MAXWORDLENGTH ;
+                              wl : in out PlainWordList_Pkg.List ) is
         newword : String( 1..prevword'length + 1 ) := prevword & "." ;
         nextletter : GameLetter ;
     begin
         newword(newword'Last) := (p.g(newletter.S)(newletter.LP)) ;
-        Put(newword'Length); Put(" : word > ") ; Put_Line(newword) ;
+        --Put(newword'Length); Put(" : word > ") ; Put_Line(newword) ;
+        if newword(1) /= newword(newword'Last)
+        then
+            if newword'Length >= 3 and then dictionary.IsWord (fulldict , newword)
+            then
+               --Put("Found a word: ") ; Put_Line(newword) ;
+               if not wl.Contains( To_Unbounded_String(newword))
+               then
+                  --Put("Adding to list "); Put_Line(newword);
+                  wl.Prepend( To_Unbounded_String(newword)) ;
+                  EnumerateWords( p , "" , newletter , MAXWORDLENGTH , wl ) ;
+                  return ;
+               end if ;
+            end if ;
+         end if ;
         if maxlength = 0
         then
            --Put_Line("Reached max length") ;
@@ -130,17 +145,83 @@ package body box is
                for cp in 1..LETTERS_PER_SIDE
                loop
                   nextletter := ( s , cp , p.g(s)(cp) ) ;
-                  EnumerateWords( p , newword , nextletter , maxlength - 1 );
+                  EnumerateWords( p , newword , nextletter , maxlength - 1 , wl );
                end loop ;
             end if ;
         end loop ;
     end EnumerateWords ;
+
+    procedure ShowWord( c : PlainWordList_Pkg.Cursor ) is
+       w : Unbounded_String := PlainWordList_Pkg.Element(c);
+    begin
+       Put_Line(To_String(w));
+    end ShowWord ;
+
+    procedure ShowWords( gl : GameLetter ; wl : PlainWordList_Pkg.List ) is
+    begin
+        Put("----------------- Starting Letter ");
+        Put(gl.L) ;
+        Put(" -------------------");
+        New_Line ;
+        wl.Iterate( ShowWord'access );
+    end ShowWords ;
+
+    function IsSolved( p : puzzle ; wl : PlainWordList_Pkg.List ) return boolean is
+       used : array (side,1..LETTERS_PER_SIDE) of boolean := (others => (others => false ));
+       solved : boolean := false ;
+       procedure CheckStatus is
+       begin
+           for s in Side
+           loop
+              for l in 1..LETTERS_PER_SIDE
+              loop
+                 if not used(s,l)
+                 then
+                    --Put(Side'Image(s)) ; Put(Integer'Image(l)) ; Put_Line(" has not been used");
+                    return ;
+                 end if ;
+              end loop ;
+           end loop ;
+           solved := true ;
+       end CheckStatus ;
+       procedure CheckVisited( c : Character ) is
+       begin
+          --Put(c) ;
+          for s in Side
+          loop
+             for l in 1..LETTERS_PER_SIDE
+             loop
+                if c = p.g(s)(l)
+                then
+                   used(s,l) := true ;
+                   --Put_Line(" Has been used");
+                   return ;
+                end if ;
+             end loop ;
+          end loop ;
+       end CheckVisited ;
+
+       procedure CheckWord( c : PlainWordList_Pkg.Cursor ) is
+          w : String := To_String( PlainWordList_Pkg.Element(c) );
+       begin
+          --Put("Checking word "); Put_Line(w);
+          for wc in w'Range
+          loop
+             CheckVisited( w(wc) );
+          end loop ;
+       end Checkword ;
+    begin
+       wl.Iterate( CheckWord'Access );
+       CheckStatus;
+       return solved ;
+    end IsSolved ;
 
     function Solve( p : Puzzle ) return WordList_Pkg.List is
        result : WordList_Pkg.List ;
        sv : Steps_Pkg.Vector ;
        gl : GameLetter ;
     begin
+       Initialize ;
        for s in Side
        loop
           for c in 1..LETTERS_PER_SIDE
@@ -148,7 +229,19 @@ package body box is
             gl.LP := c ;
             gl.S := s ;
             gl.L := p.g(s)(c);
-            EnumerateWords(p  , "" , gl) ;
+            declare
+               wl : PlainWordList_Pkg.List ;
+            begin 
+               EnumerateWords(p  , "" , gl , wl => wl ) ;
+
+               ShowWords( gl , wl );
+               if IsSolved(p , wl )
+               then
+                  Put_Line("That was a solution") ;
+               else
+                  Put_Line("Not a solution");
+               end if ;
+            end ;
           end loop ;
        end loop ;
        return result ;

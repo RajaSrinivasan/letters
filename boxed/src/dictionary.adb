@@ -24,8 +24,10 @@ package body dictionary is
 
    function IsWord(fulldict : Words_Pkg.Set ; cand : String) return boolean is
    begin
+      -- Put("Searching dict for "); Put_Line(cand) ;
       if Words_Pkg.Contains(fulldict,To_Unbounded_String(cand))
       then
+         -- Put_Line("Foundit");
          return True ;
       end if ;
       return false ;
