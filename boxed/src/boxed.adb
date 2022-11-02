@@ -6,11 +6,19 @@ with box ;
 --  claohmjteiup 
 
 procedure Boxed is
-   arg : String := Argument(1);
+   defaultarg : constant String := "claohmjteiup" ;
    g : box.game ;
 begin
    box.Initialize ;
-   g := box.Create(arg);
+   if Argument_Count >= 1
+   then 
+      g := box.Create(Argument(1));
+   Else 
+      g := box.Create(defaultarg);
+   end if ;
+   box.Show (g) ;
+   box.Solve (g) ;
+
    exception
       when boxe : box.INVALID_ARG => 
          Put("Invalid box argument "); Put(Exception_Message(boxe));
