@@ -228,8 +228,11 @@ package body box is
          loop
             for w of gs.w(s,p)
             loop
-              Init(sol,w);
-              ListSolutions( g , gs , sol );
+               if Element(w,1) /= Element(w,Length(w))
+               then
+                  Init(sol,w);
+                  ListSolutions( g , gs , sol );
+               end if ;
             end loop ;
          end loop ;
       end loop ;
