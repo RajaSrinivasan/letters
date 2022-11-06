@@ -12,10 +12,21 @@ begin
    box.Initialize ;
    if Argument_Count >= 1
    then 
-      g := box.Create(Argument(1));
+      if Argument(1) /= "."
+      then
+         g := box.Create(Argument(1));
+      else
+         g := box.Create(defaultarg) ;
+      end if;
    Else 
       g := box.Create(defaultarg);
    end if ;
+
+   if Argument_Count >= 2
+   then
+      box.MAXWORDSINSOLUTION := Integer'Value(Argument(2)) ;
+   end if ;
+
    box.Show (g) ;
    box.Solve (g) ;
 

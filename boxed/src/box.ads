@@ -48,8 +48,8 @@ package box is
       function MapVisited(g : Game ; wv : Words_Pkg.Vector ) return Visited ;
       function Covered( v : Visited ) return boolean ;
 
-      MAXWORDSINSOLUTION : constant := 6 ;
-      type SolutionWordsType is array(1..MAXWORDSINSOLUTION) of
+      MAXWORDSINSOLUTION : Integer := 6 ;
+      type SolutionWordsType is array(1..8) of
          Ada.Strings.Unbounded.Unbounded_String ;
 
       type SolutionType is

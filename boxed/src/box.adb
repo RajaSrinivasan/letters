@@ -68,7 +68,7 @@ package body box is
    procedure Solve( g : Game ) is
       gs : GameSummaryType ;
    begin
-      Put(GNAT.Source_Info.Source_Location); Put(" "); Put_Line(GNAT.Source_Info.Enclosing_Entity);
+      -- Put(GNAT.Source_Info.Source_Location); Put(" "); Put_Line(GNAT.Source_Info.Enclosing_Entity);
       gs := FindWords(g) ;
       ListSolutions(g,gs) ;
    end Solve ;
@@ -81,7 +81,7 @@ package body box is
    function FindWords( g : Game ) return GameSummaryType is
       result : GameSummaryType ;
    begin
-      Put(GNAT.Source_Info.Source_Location); Put(" "); Put_Line(GNAT.Source_Info.Enclosing_Entity);
+      --Put(GNAT.Source_Info.Source_Location); Put(" "); Put_Line(GNAT.Source_Info.Enclosing_Entity);
       for s in Side'Range
       loop
          for p in Position'Range
@@ -122,7 +122,7 @@ package body box is
                   if xpword'Length >= 3 and then dictionary.IsWord(fulldict,xpword)
                   then
                      Words_Pkg.Append(v , To_Unbounded_String(xpword)) ;
-                     Put_Line(xpword);
+                     pragma Debug(Put_Line(xpword));
                   end if ;
                   if xpword'Length <= 6
                   then
@@ -138,10 +138,9 @@ package body box is
       result : Words_Pkg.Vector;
       wstart : String (1..1) := (others => g(s,p)) ;
    begin
-      Put(GNAT.Source_Info.Source_Location); Put(" "); Put_Line(GNAT.Source_Info.Enclosing_Entity);
+      --Put(GNAT.Source_Info.Source_Location); Put(" "); Put_Line(GNAT.Source_Info.Enclosing_Entity);
       AddWords( result , g , s , p , wstart );
-      Put("====== "); Put(wstart) ; Put(" ");
-      Put(Integer(Words_Pkg.Length(result))); Put_Line(" words");
+      -- Put("====== "); Put(wstart) ; Put(" ");  Put(Integer(Words_Pkg.Length(result))); Put_Line(" words");
       return result ;
    end FindWords ;
 
@@ -206,7 +205,7 @@ package body box is
          Show(sol) ;
          return ;
        end if ;
-       if sol.Length >= sol.words'Length
+       if sol.Length >= MAXWORDSINSOLUTION
        then
           return ;
        end if;
