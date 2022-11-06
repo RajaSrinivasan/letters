@@ -199,9 +199,11 @@ package body box is
    procedure ListSolutions(g : Game ; gs : GameSummaryType ; sol : in out SolutionType ) is
       nextword : Unbounded_String ;
       nextwordlist : Words_Pkg.Vector ;
+      newwordadded : boolean ;
    begin
        if IsSolution(g,sol)
        then
+         totalsolutions := totalsolutions + 1 ;
          Show(sol) ;
          return ;
        end if ;
@@ -213,9 +215,12 @@ package body box is
        nextwordlist := gs.wi( Element(nextword,Length(nextword)) ) ;
        for s of nextwordlist
        loop
-         Add(sol,s) ;
-         ListSolutions(g , gs , sol) ;
-         Remove(sol) ;
+         Add(sol,s,newwordadded) ;
+         if newwordadded
+         then
+            ListSolutions(g , gs , sol) ;
+            Remove(sol) ;
+         end if ;
        end loop ;
    end ListSolutions ;
  
@@ -244,7 +249,9 @@ package body box is
       then
          return ;
       end if ;
-      Put("Solution: wordcount "); Put(sol.Length) ; 
+      Put("Solution: ") ;
+      Put(totalsolutions) ;
+      PUT(" ; wordcount:"); Put(sol.Length) ; 
       New_Line ;
       for w in 1..sol.Length
       loop
@@ -277,10 +284,19 @@ package body box is
       end loop ;
       return Covered(v) ;
    end IsSolution ;
-   procedure Add( sol : in out SolutionType ; w : Unbounded_String) is
+   procedure Add( sol : in out SolutionType ; w : Unbounded_String; added : out boolean) is
    begin
+      for oldw of sol.words
+      loop
+         if oldw = w
+         then
+            added := false ;
+            return ;
+         end if ;
+      end loop ;
       sol.Length := sol.Length + 1 ;
       sol.words(sol.Length) := w ;
+      added := true ;
    end Add ;
    procedure Remove( sol : in out SolutionType ) is
    begin

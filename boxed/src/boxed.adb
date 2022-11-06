@@ -1,6 +1,7 @@
 with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Exceptions ; use Ada.Exceptions ;
 with Ada.Text_Io; use Ada.Text_Io;
+with Ada.Integer_Text_Io ; use Ada.Integer_Text_Io ;
 
 with box ;
 --  claohmjteiup 
@@ -29,7 +30,7 @@ begin
 
    box.Show (g) ;
    box.Solve (g) ;
-
+   Put("Total "); Put(box.totalsolutions); Put_Line(" solutions found");
    exception
       when boxe : box.INVALID_ARG => 
          Put("Invalid box argument "); Put(Exception_Message(boxe));

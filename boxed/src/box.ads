@@ -62,8 +62,11 @@ package box is
       procedure ListSolutions(g : Game ; gs : GameSummaryType; sol : in out SolutionType) ;
       
       procedure Show(sol : SolutionType) ;
+
+
+      totalsolutions : Integer := 0;
       function IsSolution( g : Game ; sol : SolutionType ) return boolean ;
-      procedure Add( sol : in out SolutionType ; w : Unbounded_String) ;
+      procedure Add( sol : in out SolutionType ; w : Unbounded_String; added : out boolean) ;
       procedure Remove( sol : in out SolutionType );
       procedure Init( sol : in out SolutionType ; w : Unbounded_String );
 end box ;
