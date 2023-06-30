@@ -18,7 +18,7 @@ procedure Boxed is
 begin
 
    Put("boxed - letterboxed - ");
-   Put(revisions.canonical);
+   Put(revisions.version_canonical);
    Put(comp_date) ; Put(" ");
    Put(comp_time) ; 
    New_Line;

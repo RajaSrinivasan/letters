@@ -1,5 +1,5 @@
 name = "boxed"
-description = "Shiny new project"
+description = "Letterboxed solver"
 version = "0.1.0-dev"
 
 authors = ["R Srinivasan"]
@@ -7,3 +7,6 @@ maintainers = ["R Srinivasan <rajasrinivasan@hotmail.com>"]
 maintainers-logins = ["rajasrinivasan"]
 
 executables = ["boxed"]
+
+[build-switches]
+development.style_checks = "No"
