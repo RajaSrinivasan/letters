@@ -11,6 +11,6 @@ verfile.write('   build_no : constant Integer := %d ;\n' % int(sys.argv[3]))
 verfile.write('   version_build : constant String := "%s" ; \n' % sys.argv[3])
 verfile.write('   build_env : constant String := "%s" ;\n' % sys.argv[4])              
 
-verfile.write('   version_canonical : constant String := %s:%s:%s@%s ;\n' % (branch_name,short_commit_id,version_build,build_env) )
+verfile.write('   version_canonical : constant String := "%s:%s:%s@%s" ;\n' % (sys.argv[1],sys.argv[2][:7],sys.argv[3],sys.argv[4]) )
 verfile.write("end revisions;\n")
 verfile.close();
