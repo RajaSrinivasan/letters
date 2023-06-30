@@ -20,9 +20,10 @@ jobs:
       
     - name: Build
       run: >
+        cd boxed ;
         python3 version.py ${{github.ref_name}} ${{github.sha}} ${{github.run_number}} ${{github.workflow}} ;
         mv revisions.ads src ;
-        cd boxed ; alr build ; bin/boxed
+        alr build ; bin/boxed
       shell: bash
       
     - name: Publish
