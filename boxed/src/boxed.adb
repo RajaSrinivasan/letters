@@ -2,14 +2,25 @@ with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Exceptions ; use Ada.Exceptions ;
 with Ada.Text_Io; use Ada.Text_Io;
 with Ada.Integer_Text_Io ; use Ada.Integer_Text_Io ;
+with GNAT.Source_Info ;
 
 with box ;
 --  claohmjteiup 
 
 procedure Boxed is
+   comp_date : constant String := GNAT.Source_Info.Compilation_Date ;
+   comp_time : constant String := GNAT.Source_Info.Compilation_Time ;
+
    defaultarg : constant String := "claohmjteiup" ;
    g : box.game ;
+
 begin
+
+   Put("boxed - letterboxed - ");
+   Put(comp_date) ; Put(" ");
+   Put(comp_time) ;
+   New_Line;
+
    box.Initialize ;
    if Argument_Count >= 1
    then 
