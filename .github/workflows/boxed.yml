@@ -19,7 +19,11 @@ jobs:
       uses: alire-project/setup-alire@v2
 
     - name: Build
-      run: cd boxed ; alr build ; bin/boxed
+      run: >
+        python3 version.py ${{github.ref_name}} ${{github.sha}} ${{github.run_number}} ${{github.workflow}} ;
+        cat revisions.ads ;
+        mv revisions.ads src ;
+        cd boxed ; alr build ; bin/boxed
       
     - name: Publish
       uses: actions/upload-artifact@v3
