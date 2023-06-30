@@ -19,7 +19,7 @@ jobs:
       uses: alire-project/setup-alire@v2
       
     - name: Build
-      run: cd boxed ; alr build
+      run: cd boxed ; alr build ; bin/boxed
       shell: bash
       
     - name: Publish
